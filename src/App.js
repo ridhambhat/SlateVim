@@ -75,20 +75,12 @@ const App = () => {
                   console.log(start);
                   // Move cursor to end of line
                   Transforms.move(editor, { unit: "line" });
-                  // const endOffset = Math.min(
-                  //   editor.selection.anchor.offset,
-                  //   LINE_MAX_CHAR
-                  // );
-                  // const end = {
-                  //   path: editor.selection.anchor.path,
-                  //   offset: endOffset,
-                  // };
                   const end = editor.selection.anchor;
                   console.log(end);
                   // Select text from start of line to end of line
                   Transforms.select(editor, {
                     anchor: start,
-                    focus: end,
+                    focus: { path: end.path, offset: getIndexLastCharOfLine() },
                   });
                   document.execCommand("copy");
                   Transforms.delete(editor);
@@ -107,20 +99,12 @@ const App = () => {
                   console.log(start);
                   // Move cursor to end of line
                   Transforms.move(editor, { unit: "line" });
-                  // const endOffset = Math.min(
-                  //   editor.selection.anchor.offset,
-                  //   LINE_MAX_CHAR
-                  // );
-                  // const end = {
-                  //   path: editor.selection.anchor.path,
-                  //   offset: endOffset,
-                  // };
                   const end = editor.selection.anchor;
                   console.log(end);
                   // Select text from start of line to end of line
                   Transforms.select(editor, {
                     anchor: start,
-                    focus: end,
+                    focus: { path: end.path, offset: getIndexLastCharOfLine() },
                   });
                   document.execCommand("copy");
                   setKeyString("");
@@ -128,6 +112,8 @@ const App = () => {
                 }
                 event.preventDefault();
                 setKeyString("y");
+              }
+              if (event.key === "j") {
               }
             }}
           />
@@ -145,15 +131,24 @@ const App = () => {
 
 export default App;
 
-const findLeaf = (node, selection, depth) => {
-  // if ()
-  const pathArr = selection.anchor.path;
-  node.reduce((acc, curr) => {
-    if (node.indexOf(curr) === pathArr[depth]) {
-      acc = acc[pathArr[depth]];
-      return findLeaf(acc, selection, depth++);
-    }
-  });
+// Get index of last character of line, as on displayed DOM, not in Slate editor
+const getIndexLastCharOfLine = () => {
+  const selection = window.getSelection();
+  const range = selection.getRangeAt(0);
+  const caretIndex = range.startOffset;
+  const rect = range.getBoundingClientRect();
+  const container = range.startContainer;
+  const lastIndex = container.length;
+
+  for (let i = caretIndex; i < lastIndex; i++) {
+    const rangeTest = document.createRange();
+    rangeTest.setStart(container, i);
+    const rectTest = rangeTest.getBoundingClientRect();
+    // if the y is different it means the test range is in a different line
+    if (rectTest.y !== rect.y) return i - 1;
+  }
+
+  return lastIndex;
 };
 
 // Some Constants
