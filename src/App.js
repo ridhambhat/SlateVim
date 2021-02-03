@@ -3,13 +3,14 @@ import React, { useMemo, useState, useCallback } from "react";
 // Import the Slate editor factory.
 import { createEditor, Transforms, Editor, Text, Path } from "slate";
 // Import the Slate components and React plugin.
-import { Slate, Editable, withReact, ReactEditor } from "slate-react";
+import { Slate, Editable, withReact } from "slate-react";
+import { withHistory } from "slate-history";
 
 // Custom components
 import Header from "./components/Header";
 
 const App = () => {
-  const editor = useMemo(() => withReact(createEditor()), []);
+  const editor = useMemo(() => withHistory(withReact(createEditor()), []));
   const [value, setValue] = useState(initialValue);
   const [mode, setMode] = useState(INSERT_MODE);
 
