@@ -1,6 +1,8 @@
 import React from "react";
 
-const Header = ({ mode, paraStyle }) => {
+import { paraStyle } from "../styles/tailwindStyles";
+
+const Header = () => {
   return (
     <div className={`${paraStyle} text-justify`}>
       <p className="m-2">
