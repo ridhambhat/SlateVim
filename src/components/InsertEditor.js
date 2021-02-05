@@ -13,24 +13,26 @@ const InsertEditor = (props) => {
   useEffect(() => {
     props.emitter.on("*", (type, ops) => {
       if (props.id.current !== type) {
-        
         const val = props.id.current;
+        props.remote.current = true;
+        console.log("id => "+props.id.current+" Changes remote true => "+props.remote.current);
+        console.log(val);
         try{
           ops.forEach(function (op){
-            console.log(val);
-            console.log(op.path);
-            props.remote.current = true;
+            console.log(op);
+            
             // if(op.type.toString() != "insert_node")
-            editor.apply(op)
-            props.remote.current = false;
+            editor.apply(op);
+            // props.remote.current = false;
           });
-          // 
+          
           // ops.forEach((op) => editor.apply(op));
         }
         catch(e){
           console.log(e.message);
         }
-        
+        props.remote.current = false;
+        console.log("id => "+props.id.current+" Changes remote false => "+props.remote.current);
       }
     });
   }, []);
@@ -57,10 +59,11 @@ const InsertEditor = (props) => {
           })
           .map((op) => ({ ...op, data: { source: "one" } }));
 
+        console.log("id => "+props.id.current+"  REMOTE => "+props.remote.current);
         if (
           ops.length &&
           props.id &&
-          (!props.remote || !props.remote.current)
+          (!props.remote.current)
         ) {
           props.emitter.emit(props.id.current, ops);
         }

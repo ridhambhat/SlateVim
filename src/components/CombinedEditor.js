@@ -48,7 +48,7 @@ const CombinedEditor = ({ id, remote }) => {
         <span className="text-red-500">{mode.toUpperCase()}</span> mode.
       </p>
       <p className={`${paraStyle}`}>
-        Box ID => {" "}  
+        Box ID = {" "}  
         <span className="text-red-500">{id.current.toString()}</span>.
       </p>
       {mode === INSERT_MODE ? (
