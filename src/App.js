@@ -23,8 +23,8 @@ export default class App extends Component {
       <div>
        <Header />
        <SyncingEditor />
-       <div className="m-2"></div>
-       <SyncingEditor />
+       {/* <div className="m-2"></div>
+       <SyncingEditor /> */}
      </div>
     );
   }

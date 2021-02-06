@@ -1,13 +1,11 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
-// Import the Slate editor factory.
-import { createEditor } from "slate";
+import React, {  useState, useEffect } from "react";
 // Import the Slate components and React plugin.
-import { Slate, Editable, withReact } from "slate-react";
-
+import { Slate, Editable} from "slate-react";
 import { editorStyle } from "../styles/tailwindStyles";
 
 const InsertEditor = (props) => {
-  const editor = useMemo(() => withReact(createEditor()), []);
+  // const editor = useMemo(() => withReact(createEditor()), []);
+  const editor = props.editor;
   const [value, setValue] = useState(props.value);
 
   useEffect(() => {
