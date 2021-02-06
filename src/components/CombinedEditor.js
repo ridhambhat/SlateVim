@@ -3,18 +3,18 @@ import Mitt from "mitt";
 
 import NormalEditor from "./NormalEditor";
 import InsertEditor from "./InsertEditor";
-import { initialValue, INSERT_MODE } from "../utils/variables";
+import { INITIAL_VALUE, INSERT_MODE, PLACEHOLDER } from "../utils/variables";
 import { btnStyle, paraStyle } from "../styles/tailwindStyles";
 
 const emitter = new Mitt();
 
 const CombinedEditor = ({ id, remote }) => {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(INITIAL_VALUE);
   const [mode, setMode] = useState(INSERT_MODE);
 
   return (
     <Fragment>
-      <div className="container rounded bg-gray-200 p-2 w-1/6 mx-auto text-base text-center m-4">
+      <div className="container rounded bg-gray-200 p-2 w-1/2 mx-auto text-base text-center m-4">
         <div className="flex space-x-4">
           <button
             className={`${btnStyle}`}
@@ -42,6 +42,7 @@ const CombinedEditor = ({ id, remote }) => {
           remote={remote}
           emitter={emitter}
           value={value}
+          placeholder={PLACEHOLDER}
           setValue={(value) => setValue(value)}
         />
       ) : (
@@ -50,6 +51,7 @@ const CombinedEditor = ({ id, remote }) => {
           remote={remote}
           emitter={emitter}
           value={value}
+          placeholder={PLACEHOLDER}
           setValue={(value) => setValue(value)}
         />
       )}

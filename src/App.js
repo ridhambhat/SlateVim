@@ -9,8 +9,6 @@ const App = () => {
     <div>
       <Header />
       <SyncingEditor />
-      <div className="m-2"></div>
-      <SyncingEditor />
     </div>
   );
 };
