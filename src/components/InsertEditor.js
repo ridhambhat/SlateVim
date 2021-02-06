@@ -11,11 +11,16 @@ const InsertEditor = (props) => {
   const [value, setValue] = useState(props.value);
 
   useEffect(() => {
-    props.emitter.on("*", (type, ops) => {
+    props.emitter.on("*", (type, op) => {
       if (props.id.current !== type) {
         props.remote.current = true;
-        ops.forEach((op) => editor.apply(op));
+        console.log("bottom");
+        console.log(op);
+        editor.apply(op);
         props.remote.current = false;
+      } else {
+        console.log("top");
+        console.log(op);
       }
     });
   }, []);
@@ -46,7 +51,7 @@ const InsertEditor = (props) => {
           props.id &&
           (!props.remote || !props.remote.current)
         ) {
-          props.emitter.emit(props.id.current, ops);
+          ops.forEach((op) => props.emitter.emit(props.id.current, op));
         }
       }}
     >
