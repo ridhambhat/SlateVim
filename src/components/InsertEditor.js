@@ -230,7 +230,7 @@ const InsertEditor = (props) => {
         placeholder={props.placeholder}
         className={`${editorStyle}`}
         onKeyDown={(event) => {
-          if (event.metaKey) {
+          if (event.metaKey || event.ctrlKey) {
             if (event.key === "s" || event.key === "S") {
               event.preventDefault();
               modifyDocument(serialize(props.value));
