@@ -196,8 +196,6 @@ const InsertEditor = (props) => {
         const doc = serialize(value);
         if (!serialized && serialized !== "") {
           initializeDocument(doc);
-        } else {
-          modifyDocument(doc);
         }
 
         const ops = editor.operations
@@ -231,6 +229,14 @@ const InsertEditor = (props) => {
         autoFocus
         placeholder={props.placeholder}
         className={`${editorStyle}`}
+        onKeyDown={(event) => {
+          if (event.metaKey) {
+            if (event.key === "s" || event.key === "S") {
+              event.preventDefault();
+              modifyDocument(serialize(props.value));
+            }
+          }
+        }}
       />
     </Slate>
   );
