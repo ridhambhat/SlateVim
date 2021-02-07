@@ -20,11 +20,12 @@ import { onCreateOperation, onUpdateOperation } from "../graphql/subscriptions";
 import {
   getIndexLastCharOfLine,
   getIndexFirstCharOfLine,
+  getIndexCursorBelow,
 } from "../utils/cursorMethods";
 import { paste } from "../utils/textEditingMethods";
 import { paraStyle, editorStyle } from "../styles/tailwindStyles";
 import { serialize, deserialize } from "../utils/dataMethods";
-import { INSERT_MODE } from "../utils/variables";
+import { INSERT_MODE, INDENT_LITERAL } from "../utils/variables";
 
 Amplify.configure(awsExports);
 
@@ -239,9 +240,12 @@ const NormalEditor = (props) => {
         placeholder={props.placeholder}
         autoFocus
         onKeyDown={(event) => {
-          event.preventDefault();
+          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
+            event.preventDefault();
+            event.stopPropagation();
+          }
           let syncedCommand = command;
-          if (event.key !== "Escape") {
+          if (event.key !== "Escape" && event.key !== "Shift") {
             setCommand(command + event.key);
             syncedCommand += event.key;
           }
@@ -252,9 +256,11 @@ const NormalEditor = (props) => {
               setCommand(command.substr(0, command.length - 1));
             }
             console.log(command);
-          } else if (event.key === "Shift");
-          else if (event.key === "i") {
+          } else if (event.key === "i") {
             // It will shift to insert mode
+            setCommand("");
+            props.setMode(INSERT_MODE);
+          } else if (event.key === "Escape") {
             setCommand("");
           } else {
             // prettier-ignore
@@ -274,11 +280,23 @@ const NormalEditor = (props) => {
               case "p" : { handlep(); break; }
               case "P" : { handleP(); break; }
               case "u" : { handleU(); break; }
-              case "Controlr": { handleCtrlR(); break; }
-              case "h" : { handleH(); break; }
-              case "l" : { handleL(); break; }
-              case "j" : { handleJ(); break; }
-              case "k" : { handleK(); break; }
+              case "Controlr" : { handleCtrlR(); break; }
+              case ">>" : { handleIndent(); break; }
+              case "<<" : { handleDedent() ; break; }
+              // Cursor movement
+              case "h" : case "ArrowLeft" : { handleHorLeft() ; break; }
+              case "l" : case "ArrowRight": { handleLorRight(); break; }
+              case "j" : { handleJ() ; break; }
+              case "k" : { handleK() ; break; }
+              case "ArrowDown": { setCommand(""); break; }
+              case "ArrowUp"  : { setCommand(""); break; }
+              case "w" : { handleW() ; break; }
+              case "e" : { handleE() ; break; }
+              case "b" : { handleB() ; break; }
+              case "0" : { handle0() ; break; }
+              case "$" : { handle$() ; break; }
+              case "gg": { handleGG(); break; }
+              case "G" : { handleG() ; break; }
               default:
                 break;
             }
@@ -297,7 +315,7 @@ const NormalEditor = (props) => {
   // Command Handlers
   function handleDD() {
     setCommand("");
-    //Move selection to start of line
+    // Move selection to start of line
     Transforms.move(editor, { unit: "line", reverse: "true" });
     const start = editor.selection.anchor;
     // Move cursor to end of line
@@ -335,7 +353,8 @@ const NormalEditor = (props) => {
     // Get original cursor position
     const cursor = editor.selection.anchor;
     // Move selection to end of the word
-    Transforms.move(editor, { unit: "word" });
+    Transforms.move(editor, { distance: 2, unit: "word" });
+    Transforms.move(editor, { unit: "word", reverse: true });
     const start = editor.selection.anchor;
     // If no more text in editor, don't do anything
     if (start.offset === cursor.offset) return false;
@@ -494,30 +513,140 @@ const NormalEditor = (props) => {
     paste(editor);
   }
 
-  function handleH() {
-    //Cursor Left
+  // Cursor movement
+  function handleHorLeft() {
+    // Cursor Left
     setCommand("");
     Transforms.move(editor, { distance: 1, reverse: true });
   }
 
-  function handleL() {
-    //Cursor Right
+  function handleLorRight() {
+    // Cursor Right
     setCommand("");
     Transforms.move(editor, { distance: 1 });
   }
 
   function handleJ() {
-    //Cursor Down
+    // Cursor Down
     setCommand("");
 
     // To implement
+    // const lastIndex = getIndexLastCharOfLine();
+    // const cursorIndex =
+    //   editor.selection.anchor.offset - getIndexFirstCharOfLine();
+    // const offsetFromLast = lastIndex - cursorIndex + 1;
+    // console.log("last", lastIndex);
+    // console.log("cursor", cursorIndex);
+    // console.log("offset", offsetFromLast);
+    // Transforms.move(editor, { distance: offsetFromLast + cursorIndex });
+    Transforms.move(editor, { unit: "line" });
   }
 
   function handleK() {
-    //Cursor Up
+    // Cursor Up
     setCommand("");
 
     // To implement
+    // const firstIndex = getIndexFirstCharOfLine();
+    // const cursorIndex = editor.selection.anchor.offset - firstIndex;
+    // Transforms.move(editor, { distance: cursorIndex + 1, reverse: "true" });
+    // const lastIndex = getIndexLastCharOfLine();
+    // const offsetFromLast = lastIndex - cursorIndex;
+    // console.log("last", lastIndex);
+    // console.log("cursor", cursorIndex);
+    // console.log("offset", offsetFromLast);
+    // Transforms.move(editor, {
+    //   distance: offsetFromLast,
+    //   reverse: "true",
+    // });
+    Transforms.move(editor, { unit: "line", reverse: "true" });
+  }
+
+  function handleIndent() {
+    // Indent four spaces
+    setCommand("");
+
+    const { path, offset } = editor.selection.anchor;
+    const point = { path, offset: 0 }; // always start of line
+    Transforms.insertText(editor, INDENT_LITERAL, { at: point });
+  }
+
+  function handleDedent() {
+    // Dedent four spaces
+    setCommand("");
+
+    const originalCursorPosition = editor.selection;
+    const { path, offset } = editor.selection.anchor;
+    const point = { path, offset: 0 }; // always start of line
+    // hackish solution
+    let textObject = editor.children;
+    path.forEach((index) => {
+      textObject = textObject[index];
+      if (!textObject.text) {
+        textObject = textObject.children;
+      }
+    });
+    const { text } = textObject;
+    for (let i = 0; i < INDENT_LITERAL.length; i++) {
+      if (text.charAt(i) === " ") {
+        Transforms.delete(editor, { at: point, distance: 1 });
+      }
+    }
+
+    Transforms.select(editor, originalCursorPosition);
+  }
+
+  function handleW() {
+    // Jump forward to start of word
+    setCommand("");
+
+    Transforms.move(editor, { distance: 2, unit: "word" });
+    Transforms.move(editor, { unit: "word", reverse: true });
+  }
+
+  function handleE() {
+    // Jump forward to end of word
+    setCommand("");
+
+    Transforms.move(editor, { unit: "word" });
+  }
+
+  function handleB() {
+    // Jump backward to start of word
+    setCommand("");
+
+    Transforms.move(editor, { unit: "word", reverse: true });
+  }
+
+  function handle0() {
+    // Jump to start of line
+    setCommand("");
+
+    Transforms.move(editor, { unit: "line", reverse: true });
+  }
+
+  function handle$() {
+    // Jump to end of line
+    setCommand("");
+
+    Transforms.move(editor, { unit: "line" });
+  }
+
+  function handleGG() {
+    // Jump to start of document
+    setCommand("");
+
+    Transforms.select(editor, { path: [0, 0], offset: 0 });
+  }
+
+  function handleG() {
+    // Jump to start of last line
+    setCommand("");
+
+    Transforms.select(editor, {
+      path: [editor.children.length - 1, 0],
+      offset: 0,
+    });
   }
 };
 

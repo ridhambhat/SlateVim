@@ -18,14 +18,16 @@ import { btnStyle, paraStyle } from "../styles/tailwindStyles";
 
 const CombinedEditor = ({ id, remote }) => {
   const [value, setValue] = useState(INITIAL_VALUE);
-  const [mode, setMode] = useState(INSERT_MODE);
+  const [mode, setMode] = useState(NORMAL_MODE);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
   document.onkeydown = function (e) {
     if (e.key === "Escape" && mode === INSERT_MODE) {
-      console.log("Escape");
+      e.preventDefault();
+      console.log("Normal");
       setMode(NORMAL_MODE);
     } else if (e.key === "i" && mode === NORMAL_MODE) {
+      e.preventDefault();
       console.log("Insert");
       setMode(INSERT_MODE);
     }
@@ -40,14 +42,14 @@ const CombinedEditor = ({ id, remote }) => {
             value="normal"
             onClick={(e) => setMode(e.target.value)}
           >
-            Normal
+            Normal [<kbd>Esc</kbd>]
           </button>
           <button
             className={`${btnStyle}`}
             value="insert"
             onClick={(e) => setMode(e.target.value)}
           >
-            Insert
+            Insert [<kbd>i</kbd>]
           </button>
         </div>
       </div>
