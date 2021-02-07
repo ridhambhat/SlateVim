@@ -20,9 +20,15 @@ import { serialize, deserialize } from "../utils/dataMethods";
 
 Amplify.configure(awsExports);
 
-const InsertEditor = (props) => {
-  const editor = props.editor;
-
+const InsertEditor = ({
+  id,
+  groupID,
+  remote,
+  editor,
+  value,
+  setValue,
+  placeholder,
+}) => {
   const [saved, setSaved] = useState(false);
   const [serialized, setSerialized] = useState(null);
   const [operations, setOperations] = useState("");
@@ -30,12 +36,12 @@ const InsertEditor = (props) => {
   const fetchDocuments = async () => {
     try {
       const documentData = await API.graphql(
-        graphqlOperation(getDocument, { id: "document" })
+        graphqlOperation(getDocument, { id: groupID })
       );
       const data = documentData.data.getDocument;
       setSerialized(data.document);
       const dataDocument = deserialize(data.document);
-      props.setValue(dataDocument);
+      setValue(dataDocument);
     } catch (e) {
       console.log("error fetching documents", e);
     }
@@ -44,7 +50,7 @@ const InsertEditor = (props) => {
   const fetchOperations = async () => {
     try {
       const operationData = await API.graphql(
-        graphqlOperation(getOperation, { id: "operations" })
+        graphqlOperation(getOperation, { id: groupID })
       );
       const data = operationData.data.getOperation;
       setOperations(data.op);
@@ -76,18 +82,15 @@ const InsertEditor = (props) => {
       }) => {
         const { op, editorId } = onCreateOperation;
         setOperations(op);
-        if (props.id.current !== editorId) {
+        if (id.current !== editorId) {
           const parsedOp = JSON.parse(op);
           // console.log("received operations and applying...");
           // console.log(parsedOp);
-          const val = props.id.current;
+          const val = id.current;
           console.log(val);
-          props.remote.current = true;
+          remote.current = true;
           console.log(
-            "id => " +
-              props.id.current +
-              " Changes remote true => " +
-              props.remote.current
+            "id => " + id.current + " Changes remote true => " + remote.current
           );
           try {
             parsedOp.forEach((o) => {
@@ -97,12 +100,9 @@ const InsertEditor = (props) => {
           } catch (e) {
             console.log(e.message);
           }
-          props.remote.current = false;
+          remote.current = false;
           console.log(
-            "id => " +
-              props.id.current +
-              " Changes remote false => " +
-              props.remote.current
+            "id => " + id.current + " Changes remote false => " + remote.current
           );
           // console.log("operations applied!");
         }
@@ -122,16 +122,13 @@ const InsertEditor = (props) => {
       }) => {
         const { op, editorId } = onUpdateOperation;
         setOperations(op);
-        if (props.id.current !== editorId) {
+        if (id.current !== editorId) {
           const parsedOp = JSON.parse(op);
           // console.log("received operations and applying...");
           // console.log(parsedOp);
-          props.remote.current = true;
+          remote.current = true;
           console.log(
-            "id => " +
-              props.id.current +
-              " Changes remote true => " +
-              props.remote.current
+            "id => " + id.current + " Changes remote true => " + remote.current
           );
           try {
             parsedOp.forEach((o) => {
@@ -141,12 +138,9 @@ const InsertEditor = (props) => {
           } catch (e) {
             console.log(e.message);
           }
-          props.remote.current = false;
+          remote.current = false;
           console.log(
-            "id => " +
-              props.id.current +
-              " Changes remote false => " +
-              props.remote.current
+            "id => " + id.current + " Changes remote false => " + remote.current
           );
           // console.log("operations applied!");
         }
@@ -174,7 +168,7 @@ const InsertEditor = (props) => {
     try {
       await API.graphql(
         graphqlOperation(createDocument, {
-          input: { id: "document", document: doc },
+          input: { id: groupID, document: doc },
         })
       );
       // console.log("created document");
@@ -188,7 +182,7 @@ const InsertEditor = (props) => {
     try {
       await API.graphql(
         graphqlOperation(updateDocument, {
-          input: { id: "document", document: doc },
+          input: { id: groupID, document: doc },
         })
       );
       // console.log("updated document");
@@ -202,7 +196,7 @@ const InsertEditor = (props) => {
     try {
       await API.graphql(
         graphqlOperation(createOperation, {
-          input: { id: "operations", editorId: editorId, op: ops },
+          input: { id: groupID, editorId: editorId, op: ops },
         })
       );
       // console.log("created operations");
@@ -216,7 +210,7 @@ const InsertEditor = (props) => {
     try {
       await API.graphql(
         graphqlOperation(updateOperation, {
-          input: { id: "operations", editorId: editorId, op: ops },
+          input: { id: groupID, editorId: editorId, op: ops },
         })
       );
       // console.log("updated operations");
@@ -229,10 +223,10 @@ const InsertEditor = (props) => {
   return (
     <Slate
       editor={editor}
-      value={props.value}
+      value={value}
       onChange={(value) => {
         console.log("CHANGE FROM");
-        props.setValue(value);
+        setValue(value);
         const doc = serialize(value);
         if (!serialized && serialized !== "") {
           initializeDocument(doc);
@@ -254,31 +248,29 @@ const InsertEditor = (props) => {
         // console.log("ops to be emitted:");
         // ops.forEach((op) => console.log(op));
 
-        console.log(
-          "id => " + props.id.current + "  REMOTE => " + props.remote.current
-        );
+        console.log("id => " + id.current + "  REMOTE => " + remote.current);
 
-        if (ops.length && !props.remote.current) {
+        if (ops.length && !remote.current) {
           setSaved(false);
           const opsData = JSON.stringify(ops);
           // console.log(opsData);
           if (!operations) {
-            initializeOperation(opsData, props.id.current);
+            initializeOperation(opsData, id.current);
           } else {
-            modifyOperation(opsData, props.id.current);
+            modifyOperation(opsData, id.current);
           }
         }
       }}
     >
       <Editable
         autoFocus
-        placeholder={props.placeholder}
+        placeholder={placeholder}
         className={`${editorStyle}`}
         onKeyDown={(event) => {
           if (event.metaKey || event.ctrlKey) {
             if (event.key === "s" || event.key === "S") {
               event.preventDefault();
-              modifyDocument(serialize(props.value));
+              modifyDocument(serialize(value));
               setSaved(true);
             }
           }
