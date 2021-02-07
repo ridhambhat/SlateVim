@@ -1,0 +1,10 @@
+type Document @model {
+  id: ID!
+  document: String!
+}
+
+type Operation @model {
+  id: ID!
+  editorId: String!
+  op: String!
+}
