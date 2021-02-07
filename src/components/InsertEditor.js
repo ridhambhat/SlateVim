@@ -15,7 +15,7 @@ import {
 import { onCreateOperation, onUpdateOperation } from "../graphql/subscriptions";
 
 // Custom
-import { editorStyle } from "../styles/tailwindStyles";
+import { editorStyle, paraStyle } from "../styles/tailwindStyles";
 import { serialize, deserialize } from "../utils/dataMethods";
 
 Amplify.configure(awsExports);
@@ -23,6 +23,7 @@ Amplify.configure(awsExports);
 const InsertEditor = (props) => {
   const editor = props.editor;
 
+  const [saved, setSaved] = useState(false);
   const [serialized, setSerialized] = useState(null);
   const [operations, setOperations] = useState("");
 
@@ -82,16 +83,27 @@ const InsertEditor = (props) => {
           const val = props.id.current;
           console.log(val);
           props.remote.current = true;
-          console.log("id => "+props.id.current+" Changes remote true => "+props.remote.current);
+          console.log(
+            "id => " +
+              props.id.current +
+              " Changes remote true => " +
+              props.remote.current
+          );
           try {
             parsedOp.forEach((o) => {
-              editor.apply(o)
+              setSaved(false);
+              editor.apply(o);
             });
           } catch (e) {
             console.log(e.message);
           }
           props.remote.current = false;
-          console.log("id => "+props.id.current+" Changes remote false => "+props.remote.current);
+          console.log(
+            "id => " +
+              props.id.current +
+              " Changes remote false => " +
+              props.remote.current
+          );
           // console.log("operations applied!");
         }
       },
@@ -115,10 +127,27 @@ const InsertEditor = (props) => {
           // console.log("received operations and applying...");
           // console.log(parsedOp);
           props.remote.current = true;
-          console.log("id => "+props.id.current+" Changes remote true => "+props.remote.current);
-          parsedOp.forEach((o) => editor.apply(o));
+          console.log(
+            "id => " +
+              props.id.current +
+              " Changes remote true => " +
+              props.remote.current
+          );
+          try {
+            parsedOp.forEach((o) => {
+              setSaved(false);
+              editor.apply(o);
+            });
+          } catch (e) {
+            console.log(e.message);
+          }
           props.remote.current = false;
-          console.log("id => "+props.id.current+" Changes remote false => "+props.remote.current);
+          console.log(
+            "id => " +
+              props.id.current +
+              " Changes remote false => " +
+              props.remote.current
+          );
           // console.log("operations applied!");
         }
       },
@@ -202,7 +231,7 @@ const InsertEditor = (props) => {
       editor={editor}
       value={props.value}
       onChange={(value) => {
-        console.log("CHANGE FROM");        
+        console.log("CHANGE FROM");
         props.setValue(value);
         const doc = serialize(value);
         if (!serialized && serialized !== "") {
@@ -224,9 +253,13 @@ const InsertEditor = (props) => {
 
         // console.log("ops to be emitted:");
         // ops.forEach((op) => console.log(op));
-        
-        console.log("id => "+props.id.current+"  REMOTE => "+props.remote.current);
+
+        console.log(
+          "id => " + props.id.current + "  REMOTE => " + props.remote.current
+        );
+
         if (ops.length && !props.remote.current) {
+          setSaved(false);
           const opsData = JSON.stringify(ops);
           // console.log(opsData);
           if (!operations) {
@@ -246,10 +279,14 @@ const InsertEditor = (props) => {
             if (event.key === "s" || event.key === "S") {
               event.preventDefault();
               modifyDocument(serialize(props.value));
+              setSaved(true);
             }
           }
         }}
       />
+      <p className={`${paraStyle}`}>
+        Status: {saved ? <i>Saved</i> : <i>Unsaved</i>}
+      </p>
     </Slate>
   );
 };

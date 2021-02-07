@@ -8,20 +8,24 @@ import { withHistory } from "slate-history";
 // Custom
 import NormalEditor from "./NormalEditor";
 import InsertEditor from "./InsertEditor";
-import { INITIAL_VALUE, INSERT_MODE, PLACEHOLDER } from "../utils/variables";
+import {
+  INITIAL_VALUE,
+  INSERT_MODE,
+  NORMAL_MODE,
+  PLACEHOLDER,
+} from "../utils/variables";
 import { btnStyle, paraStyle } from "../styles/tailwindStyles";
 
 const CombinedEditor = ({ id, remote }) => {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(INITIAL_VALUE);
   const [mode, setMode] = useState(INSERT_MODE);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
-  document.onkeydown = function(e){
-    if(e.key === "Escape" && mode === INSERT_MODE){
-      console.log("Escape");      
+  document.onkeydown = function (e) {
+    if (e.key === "Escape" && mode === INSERT_MODE) {
+      console.log("Escape");
       setMode(NORMAL_MODE);
-    }
-    else if(e.key === "i" && mode === NORMAL_MODE){
+    } else if (e.key === "i" && mode === NORMAL_MODE) {
       console.log("Insert");
       setMode(INSERT_MODE);
     }
@@ -48,30 +52,28 @@ const CombinedEditor = ({ id, remote }) => {
         </div>
       </div>
       <p className={`${paraStyle}`}>
-        You are currently in {" "}
+        You are currently in{" "}
         <span className="text-red-500">{mode.toUpperCase()}</span> mode.
       </p>
       {mode === INSERT_MODE ? (
         <InsertEditor
           id={id}
           remote={remote}
-          emitter={emitter}
           value={value}
           editor={editor}
           placeholder={PLACEHOLDER}
           setValue={(value) => setValue(value)}
-          setMode={(mode)=> setMode(mode)}
+          setMode={(mode) => setMode(mode)}
         />
       ) : (
         <NormalEditor
           id={id}
           remote={remote}
-          emitter={emitter}
           value={value}
           editor={editor}
           placeholder={PLACEHOLDER}
           setValue={(value) => setValue(value)}
-          setMode={(mode)=> setMode(mode)}
+          setMode={(mode) => setMode(mode)}
         />
       )}
     </Fragment>

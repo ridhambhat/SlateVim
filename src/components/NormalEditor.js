@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // Import the Slate editor factory.
 import { Transforms } from "slate";
 // Import the Slate components and React plugin.
-import { Slate, Editable} from "slate-react";
+import { Slate, Editable } from "slate-react";
 
 // Import Amplify methods and library
 import Amplify, { API, graphqlOperation } from "aws-amplify";
@@ -30,7 +30,7 @@ Amplify.configure(awsExports);
 
 const NormalEditor = (props) => {
   const editor = props.editor;
-  
+
   const [command, setCommand] = useState(""); // currently registered command
   const [serialized, setSerialized] = useState("");
   const [operations, setOperations] = useState("");
@@ -194,16 +194,6 @@ const NormalEditor = (props) => {
     }
   };
 
-  useEffect(() => {
-    props.emitter.on("*", (type, ops) => {
-      if (props.id.current !== type) {
-        props.remote.current = true;
-        ops.forEach((op) => editor.apply(op));
-        props.remote.current = false;
-      }
-    });
-  }, []);
-
   return (
     <Slate
       editor={editor}
@@ -248,50 +238,50 @@ const NormalEditor = (props) => {
         className={`${editorStyle}`}
         placeholder={props.placeholder}
         autoFocus
-
-        onKeyDown = {(event) => {
+        onKeyDown={(event) => {
           event.preventDefault();
-          if(event.key === ':'){
-            setCommand("");
+          let syncedCommand = command;
+          if (event.key !== "Escape") {
+            setCommand(command + event.key);
+            syncedCommand += event.key;
           }
-          else if (event.key === 'Backspace'){
-            if(command){
-              setCommand(command.substr(0, command.length-1));
+          if (event.key === ":") {
+            setCommand("");
+          } else if (event.key === "Backspace") {
+            if (command) {
+              setCommand(command.substr(0, command.length - 1));
             }
             console.log(command);
-          }
-          else if(event.key === "Shift");
-          else if(event.key === 'i'){
-            //It will shift to insert mode
+          } else if (event.key === "Shift");
+          else if (event.key === "i") {
+            // It will shift to insert mode
             setCommand("");
-          }
-          else if(event.key === 'Enter'){  
-            switch(command){
-              case "dd" : {handleDD(); break; }
-              case "yy" : {handleYY(); break; }
-              case "y0" : {handleY0(); break; }
-              case "y$" : {handleY$(); break; }
-              case "yw" : {handleYW(); break; }
-              case "dw" : {handleDW(); break; }
-              case "d0" : {handleD0(); break; }
-              case "D" : {handleDorD$(); break; }
-              case "d$" : {handleDorD$(); break; }
-              case "cc" : {handleCC(); break; }
-              case "C" : {handleC(); break; }
-              case "x" : {handleX(); break; }
-              case "p" : {handlep(); break; }
-              case "P" : {handleP(); break; }
-              case "u" : {handleU(); break; }
-              case "Controlr" : {handleCtrlR(); break; }
-              case "h" : {handleH(); break; }
-              case "l" : {handleL(); break; }
-              case "j" : {handleJ(); break; }
-              case "k" : {handleK(); break; }
-              default: break;
-            }            
-          }
-          else if(event.key !== 'Escape'){
-            setCommand(command+=event.key)
+          } else {
+            // prettier-ignore
+            switch (syncedCommand) {
+              case "dd": { handleDD(); break; }
+              case "yy": { handleYY(); break; }
+              case "y0": { handleY0(); break; }
+              case "y$": { handleY$(); break; }
+              case "yw": { handleYW(); break; }
+              case "dw": { handleDW(); break; }
+              case "d0": { handleD0(); break; }
+              case "D" : { handleDorD$(); break; }
+              case "d$": { handleDorD$(); break; }
+              case "cc": { handleCC(); break; }
+              case "C" : { handleC(); break; }
+              case "x" : { handleX(); break; }
+              case "p" : { handlep(); break; }
+              case "P" : { handleP(); break; }
+              case "u" : { handleU(); break; }
+              case "Controlr": { handleCtrlR(); break; }
+              case "h" : { handleH(); break; }
+              case "l" : { handleL(); break; }
+              case "j" : { handleJ(); break; }
+              case "k" : { handleK(); break; }
+              default:
+                break;
+            }
           }
         }}
       />
@@ -305,7 +295,7 @@ const NormalEditor = (props) => {
   );
 
   // Command Handlers
-  function handleDD () {
+  function handleDD() {
     setCommand("");
     //Move selection to start of line
     Transforms.move(editor, { unit: "line", reverse: "true" });
@@ -323,7 +313,7 @@ const NormalEditor = (props) => {
     document.execCommand("cut");
   }
 
-  function handleD0 () {
+  function handleD0() {
     setCommand("");
     // Get original cursor position
     const cursor = editor.selection.anchor;
@@ -340,55 +330,55 @@ const NormalEditor = (props) => {
     document.execCommand("cut");
   }
 
-  function handleDW (){
+  function handleDW() {
     setCommand("");
     // Get original cursor position
     const cursor = editor.selection.anchor;
     // Move selection to end of the word
-    Transforms.move(editor, { unit: "word"});
+    Transforms.move(editor, { unit: "word" });
     const start = editor.selection.anchor;
     // If no more text in editor, don't do anything
     if (start.offset === cursor.offset) return false;
     Transforms.select(editor, {
       anchor: { path: start.path, offset: cursor.offset },
-      focus: { path: start.path, offset: start.offset},
+      focus: { path: start.path, offset: start.offset },
     });
     document.execCommand("cut");
   }
 
-  function handleDorD$ (){
+  function handleDorD$() {
     setCommand("");
     // Get original cursor position
     const cursor = editor.selection.anchor;
     // Move selection to end of the line
-    Transforms.move(editor, { unit: "line"});
+    Transforms.move(editor, { unit: "line" });
     const start = editor.selection.anchor;
     // If no more text in editor, don't do anything
     if (start.offset === cursor.offset) return false;
     Transforms.select(editor, {
       anchor: { path: start.path, offset: cursor.offset },
-      focus: { path: start.path, offset: start.offset},
+      focus: { path: start.path, offset: start.offset },
     });
     document.execCommand("cut");
   }
 
-  function handleX (){
+  function handleX() {
     setCommand("");
     // Get original cursor position
     const cursor = editor.selection.anchor;
     // Move selection to end of the line
-    Transforms.move(editor, { unit: "character"});
+    Transforms.move(editor, { unit: "character" });
     const start = editor.selection.anchor;
     // If no more text in editor, don't do anything
     if (start.offset === cursor.offset) return false;
     Transforms.select(editor, {
       anchor: { path: start.path, offset: cursor.offset },
-      focus: { path: start.path, offset: start.offset},
+      focus: { path: start.path, offset: start.offset },
     });
     document.execCommand("cut");
   }
 
-  function handleYY () {
+  function handleYY() {
     setCommand("");
     // Get original cursor position
     const originalPosition = editor.selection;
@@ -410,23 +400,23 @@ const NormalEditor = (props) => {
     Transforms.select(editor, originalPosition);
   }
 
-  function handleYW () {
+  function handleYW() {
     setCommand("");
     // Get original cursor position
     const cursor = editor.selection.anchor;
     // Move selection to end of the word
-    Transforms.move(editor, { unit: "word"});
+    Transforms.move(editor, { unit: "word" });
     const start = editor.selection.anchor;
     // If no more text in editor, don't do anything
     if (start.offset === cursor.offset) return false;
     Transforms.select(editor, {
       anchor: { path: start.path, offset: cursor.offset },
-      focus: { path: start.path, offset: start.offset},
+      focus: { path: start.path, offset: start.offset },
     });
     document.execCommand("copy");
   }
 
-  function handleY0 () {
+  function handleY0() {
     setCommand("");
     //Get original cursor position
     const originalPosition = editor.selection;
@@ -447,7 +437,7 @@ const NormalEditor = (props) => {
     Transforms.select(editor, originalPosition);
   }
 
-  function handleY$ () {
+  function handleY$() {
     setCommand("");
     // Get original cursor position
     const originalPosition = editor.selection;
@@ -468,65 +458,65 @@ const NormalEditor = (props) => {
     Transforms.select(editor, originalPosition);
   }
 
-  function handleCC () {
+  function handleCC() {
     handleDD();
-    setTimeout(()=>{
+    setTimeout(() => {
       props.setMode(INSERT_MODE);
     }, 100);
   }
 
-  function handleC () {
+  function handleC() {
     handleDorD$();
-    setTimeout(()=>{
+    setTimeout(() => {
       props.setMode(INSERT_MODE);
     }, 100);
   }
 
-  function handleU (){
+  function handleU() {
     setCommand("");
     editor.undo();
   }
 
-  function handleCtrlR (){
+  function handleCtrlR() {
     setCommand("");
     editor.redo();
   }
 
-  function handleP () {
+  function handleP() {
     setCommand("");
     var originalPosition = editor.selection;
     paste(editor);
     Transforms.select(editor, originalPosition);
   }
 
-  function handlep () {
+  function handlep() {
     setCommand("");
     paste(editor);
   }
 
-  function handleH () {
+  function handleH() {
     //Cursor Left
     setCommand("");
-    Transforms.move(editor, {distance: 1, reverse: true});
+    Transforms.move(editor, { distance: 1, reverse: true });
   }
 
-  function handleL () {
+  function handleL() {
     //Cursor Right
     setCommand("");
-    Transforms.move(editor, {distance: 1});
+    Transforms.move(editor, { distance: 1 });
   }
 
-  function handleJ () {
+  function handleJ() {
     //Cursor Down
     setCommand("");
 
     // To implement
   }
 
-  function handleK (){
+  function handleK() {
     //Cursor Up
     setCommand("");
-    
+
     // To implement
   }
 };
