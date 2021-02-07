@@ -1,8 +1,6 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
-// Import the Slate editor factory.
-import { createEditor } from "slate";
+import React, { useState, useEffect } from "react";
 // Import the Slate components and React plugin.
-import { Slate, Editable, withReact } from "slate-react";
+import { Slate, Editable } from "slate-react";
 
 // Import Amplify methods and library
 import Amplify, { API, graphqlOperation } from "aws-amplify";
@@ -23,7 +21,7 @@ import { serialize, deserialize } from "../utils/dataMethods";
 Amplify.configure(awsExports);
 
 const InsertEditor = (props) => {
-  const editor = useMemo(() => withReact(createEditor()), []);
+  const editor = props.editor;
 
   const [serialized, setSerialized] = useState(null);
   const [operations, setOperations] = useState("");
@@ -81,9 +79,19 @@ const InsertEditor = (props) => {
           const parsedOp = JSON.parse(op);
           // console.log("received operations and applying...");
           // console.log(parsedOp);
+          const val = props.id.current;
+          console.log(val);
           props.remote.current = true;
-          parsedOp.forEach((o) => editor.apply(o));
+          console.log("id => "+props.id.current+" Changes remote true => "+props.remote.current);
+          try {
+            parsedOp.forEach((o) => {
+              editor.apply(o)
+            });
+          } catch (e) {
+            console.log(e.message);
+          }
           props.remote.current = false;
+          console.log("id => "+props.id.current+" Changes remote false => "+props.remote.current);
           // console.log("operations applied!");
         }
       },
@@ -107,8 +115,10 @@ const InsertEditor = (props) => {
           // console.log("received operations and applying...");
           // console.log(parsedOp);
           props.remote.current = true;
+          console.log("id => "+props.id.current+" Changes remote true => "+props.remote.current);
           parsedOp.forEach((o) => editor.apply(o));
           props.remote.current = false;
+          console.log("id => "+props.id.current+" Changes remote false => "+props.remote.current);
           // console.log("operations applied!");
         }
       },
@@ -192,6 +202,7 @@ const InsertEditor = (props) => {
       editor={editor}
       value={props.value}
       onChange={(value) => {
+        console.log("CHANGE FROM");        
         props.setValue(value);
         const doc = serialize(value);
         if (!serialized && serialized !== "") {
@@ -213,7 +224,8 @@ const InsertEditor = (props) => {
 
         // console.log("ops to be emitted:");
         // ops.forEach((op) => console.log(op));
-
+        
+        console.log("id => "+props.id.current+"  REMOTE => "+props.remote.current);
         if (ops.length && !props.remote.current) {
           const opsData = JSON.stringify(ops);
           // console.log(opsData);
