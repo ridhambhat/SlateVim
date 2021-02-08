@@ -280,7 +280,9 @@ const NormalEditor = ({
             // It will shift to insert mode
             setCommand("");
             modifyDocument(serialize(value));
-            setMode(INSERT_MODE);
+            setTimeout(() => {
+              setMode(INSERT_MODE);
+            }, 100);
           } else if (event.key === "Escape") {
             setCommand("");
           } else {

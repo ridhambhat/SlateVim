@@ -37,11 +37,15 @@ const CombinedEditor = ({ id, groupID, remote, history }) => {
     if (e.key === "Escape" && mode === INSERT_MODE) {
       e.preventDefault();
       console.log("Normal");
-      setMode(NORMAL_MODE);
+      setTimeout(() => {
+        setMode(NORMAL_MODE);
+      }, 100);
     } else if (e.key === "i" && mode === NORMAL_MODE) {
       e.preventDefault();
       console.log("Insert");
-      setMode(INSERT_MODE);
+      setTimeout(() => {
+        setMode(INSERT_MODE);
+      }, 100);
     }
   };
 
@@ -76,7 +80,9 @@ const CombinedEditor = ({ id, groupID, remote, history }) => {
       console.log(e.message);
       initializeDocument(serialize(value));
     }
-    setMode(event.target.value);
+    setTimeout(() => {
+      setMode(event.target.value);
+    }, 100);
   };
 
   return (
