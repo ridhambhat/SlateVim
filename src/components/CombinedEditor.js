@@ -22,7 +22,7 @@ import {
 
 const CombinedEditor = ({ id, groupID, remote }) => {
   const [value, setValue] = useState(INITIAL_VALUE);
-  const [mode, setMode] = useState(NORMAL_MODE);
+  const [mode, setMode] = useState(INSERT_MODE);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
   document.onkeydown = function (e) {

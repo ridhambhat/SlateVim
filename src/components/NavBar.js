@@ -3,6 +3,12 @@ import { darkGrayBtnStyle } from "../styles/tailwindStyles";
 import { SITE_URL } from "../utils/variables";
 
 const NavBar = ({ history }) => {
+  const fbSend = () => {
+    window.FB.ui({
+      method: "send",
+      link: `${window.location}`,
+    });
+  };
   return (
     <div>
       <button
@@ -26,12 +32,9 @@ const NavBar = ({ history }) => {
         >
           <i className="fab fa-telegram px-2"></i>
         </a>
-        <a
-          href={`http://www.facebook.com/dialog/send?app_id=405773517153625&amp;link=${window.location}&amp;redirect_uri=${SITE_URL}`}
-          title="Share by Messenger"
-        >
+        <button title="Share by Messenger" onClick={fbSend}>
           <i className="fab fa-facebook-messenger px-2"></i>
-        </a>
+        </button>
         <a href={`sms:?&body=${window.location}`} title="Share by Text Message">
           <i className="fas fa-sms px-2"></i>
         </a>
