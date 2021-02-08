@@ -19,7 +19,7 @@ const Header = () => {
             >
               <i>SlateVim</i> <i className="fab fa-github"></i>
             </a>
-            , a collaborative Vim document editor built using{" "}
+            , collaborative Vim document editing built on{" "}
             <a
               className={`${linkStyle}`}
               href="https://github.com/ianstormtaylor/slate"
@@ -43,8 +43,11 @@ const Header = () => {
             read-only, but give you access to text editing commands like in
             Vim's Normal Mode. Try typing{" "}
             <kbd className="bg-gray-200 p-1 rounded">yy</kbd> or{" "}
-            <kbd className="bg-gray-200 p-1 rounded">dd</kbd>! Remember to save
-            in <strong>Insert</strong> Mode!
+            <kbd className="bg-gray-200 p-1 rounded">dd</kbd>! It's autosave in{" "}
+            <strong>Insert</strong> Mode, but{" "}
+            <kbd className="bg-gray-200 p-1 rounded">!wEnter</kbd> or{" "}
+            <kbd className="bg-gray-200 p-1 rounded">!wqEnter</kbd> to save in{" "}
+            <strong>Normal</strong> Mode!
           </p>
         </div>
       </div>

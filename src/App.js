@@ -10,7 +10,7 @@ const App = ({ match: { params }, history }) => {
     <div>
       <NavBar history={history} />
       <Header />
-      <SyncingEditor groupID={params.id} />
+      <SyncingEditor history={history} groupID={params.id} />
     </div>
   );
 };
