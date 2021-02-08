@@ -223,9 +223,8 @@ const NormalEditor = ({
       value={value}
       onChange={(val) => {
         setValue(val);
-        const doc = serialize(val);
         if (!serialized && serialized !== "") {
-          initializeDocument(doc);
+          initializeDocument(serialize(value));
         }
 
         const ops = editor.operations
@@ -288,16 +287,21 @@ const NormalEditor = ({
             // prettier-ignore
             switch (syncedCommand) {
               case "dd": { handleDD(); break; }
+              case "dw": { handleDW(); break; }
+              case "de": { handleDE(); break; }
+              case "db": { handleDB(); break; }
+              case "d0": { handleD0(); break; }
+              case "D" : { handleDorD$(); break; }
+              case "d$": { handleDorD$(); break; }
               case "yy": { handleYY(); break; }
               case "y0": { handleY0(); break; }
               case "y$": { handleY$(); break; }
               case "yw": { handleYW(); break; }
-              case "dw": { handleDW(); break; }
-              case "d0": { handleD0(); break; }
-              case "D" : { handleDorD$(); break; }
-              case "d$": { handleDorD$(); break; }
               case "cc": { handleCC(); break; }
               case "C" : { handleC(); break; }
+              case "cw": { handleCW(); break;}
+              case "ce": { handleCE(); break;}
+              case "cb": { handleCB(); break;}
               case "x" : { handleX(); break; }
               case "p" : { handlep(); break; }
               case "P" : { handleP(); break; }
@@ -378,6 +382,38 @@ const NormalEditor = ({
     Transforms.select(editor, {
       anchor: { path: start.path, offset: start.offset },
       focus: { path: cursor.path, offset: cursor.offset },
+    });
+    document.execCommand("cut");
+  }
+
+  function handleDE() {
+    setCommand("");
+    // Get original cursor position
+    const cursor = editor.selection.anchor;
+    // Move selection to end of the word
+    Transforms.move(editor, { distance: 1, unit: "word" });
+    const start = editor.selection.anchor;
+    // If no more text in editor, don't do anything
+    if (start.offset === cursor.offset) return false;
+    Transforms.select(editor, {
+      anchor: { path: start.path, offset: cursor.offset },
+      focus: { path: start.path, offset: start.offset },
+    });
+    document.execCommand("cut");
+  }
+
+  function handleDB() {
+    setCommand("");
+    // Get original cursor position
+    const cursor = editor.selection.anchor;
+    // Move selection to end of the word
+    Transforms.move(editor, { distance: 1, unit: "word", reverse: true });
+    const start = editor.selection.anchor;
+    // If no more text in editor, don't do anything
+    if (start.offset === cursor.offset) return false;
+    Transforms.select(editor, {
+      anchor: { path: start.path, offset: cursor.offset },
+      focus: { path: start.path, offset: start.offset },
     });
     document.execCommand("cut");
   }
@@ -513,6 +549,7 @@ const NormalEditor = ({
 
   function handleCC() {
     handleDD();
+    modifyDocument(serialized(editor.children));
     setTimeout(() => {
       setMode(INSERT_MODE);
     }, 100);
@@ -520,6 +557,31 @@ const NormalEditor = ({
 
   function handleC() {
     handleDorD$();
+    modifyDocument(serialize(editor.children));
+    setTimeout(() => {
+      setMode(INSERT_MODE);
+    }, 100);
+  }
+
+  function handleCW() {
+    handleDW();
+    modifyDocument(serialize(editor.children));
+    setTimeout(() => {
+      setMode(INSERT_MODE);
+    }, 100);
+  }
+
+  function handleCE() {
+    handleDE();
+    modifyDocument(serialize(editor.children));
+    setTimeout(() => {
+      setMode(INSERT_MODE);
+    }, 100);
+  }
+
+  function handleCB() {
+    handleDB();
+    modifyDocument(serialize(editor.children));
     setTimeout(() => {
       setMode(INSERT_MODE);
     }, 100);

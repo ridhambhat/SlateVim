@@ -70,13 +70,13 @@ const CombinedEditor = ({ id, groupID, remote, history }) => {
   };
 
   const onModeButtonClick = (event) => {
-    setMode(event.target.value);
     try {
       modifyDocument(serialize(value));
     } catch (e) {
       console.log(e.message);
       initializeDocument(serialize(value));
     }
+    setMode(event.target.value);
   };
 
   return (
