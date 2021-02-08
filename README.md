@@ -8,7 +8,7 @@
 
 Collaborative tools are the need of the hour. Services like google docs work great, but developers sometimes need a quick share and an environment they are used to. Here is where <b>SlateVim</b> comes in. 
 
-Used making Slate.js it offers an excellent rich text editor along with the commands vim is famous for. It packages the power of Vim with the comfort of Google Docs into one.
+Used making Slate.js it offers an excellent text editor along with the commands vim is famous for. It packages the power of Vim with the comfort of Google Docs into one.
 
 ## ⚙️ Preliminaries
 
@@ -49,6 +49,12 @@ Used making Slate.js it offers an excellent rich text editor along with the comm
 
 Adapted from [Vim Cheat Sheet](https://vim.rtorr.com/).
 
+Switch mode
+
+|Action|Command|
+|------|-------|
+|Change to Insert Mode|`i`|
+
 Copy, cut, paste
 
 |Action|Command|
@@ -61,10 +67,15 @@ Copy, cut, paste
 |Paste before cursor|`P`|
 |Delete (cut) line|`dd`|
 |Delete (cut) from cursor position to start of next word|`dw`|
+|Delete (cut) from cursor position to end of word|`de`|
+|Delete (cut) from cursor position backwards to start of word|`db`|
 |Delete (cut) from cursor position to end of line|`D` or `d$`|
 |Delete (cut) from cursor position to start of line|`d0`|
 |Delete (cut) single character|`x`|
 |Cut line and enter Insert mode|`cc`|
+|Cut from position to start of next word, then enters Insert Mode|`cw`|
+|Cut from position to end of word, then enters Insert Mode|`ce`|
+|Delete (cut) from cursor position backwards to start of word, then enters Insert Mode|`cb`|
 |Cut to end of line and enter Insert mode|`C`|
 
 Cursor movement
@@ -87,10 +98,11 @@ Indenting, dedenting
 
 |Action|Command|
 |------|-------|
-|Indent line one shiftwidth|`>>`|
-|Dedent line one shiftwidth|`<<`|
+|Indent line one shiftwidth (4 spaces)|`>>`|
+|Dedent line one shiftwidth (4 spaces)|`<<`|
 
 Undo, redo
+
 |Action|Command|
 |------|-------|
 |Undo|`u`|
@@ -98,7 +110,11 @@ Undo, redo
 
 ### Insert Mode
 
-TBC
+Switch mode
+
+|Action|Command|
+|------|-------|
+|Change to Normal Mode|`Escape`|
 
 ## 🐱‍👤 Challenges we ran into
 
