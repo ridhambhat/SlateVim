@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { darkGrayBtnStyle, paraStyle } from "../styles/tailwindStyles";
+
+import {
+  darkGrayBtnStyle,
+  paraStyle,
+  linkStyle,
+} from "../styles/tailwindStyles";
+import logo from "../assets/images/logo.png";
 
 const Home = ({ history }) => {
   const [value, setValue] = useState("");
@@ -11,7 +17,17 @@ const Home = ({ history }) => {
 
   return (
     <div className={`${paraStyle}`}>
-      <p className="text-2xl m-4">Welcome to SlateVim!</p>
+      <img src={logo} alt="SlateVim logo" className="mx-auto" />
+      <p className="text-2xl m-4">
+        Welcome to{" "}
+        <a
+          className={`${linkStyle}`}
+          href="https://github.com/ridhambhat/SlateVim"
+        >
+          <i>SlateVim</i> <i className="fab fa-github"></i>
+        </a>
+        !
+      </p>
       <p className="m-4">
         Please enter a group ID here to join a group or create a new one:
       </p>

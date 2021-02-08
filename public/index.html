@@ -4,14 +4,22 @@
     <meta charset="utf-8" />
     <!-- to remove tailwind css cdn -->
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="A collaborative Vim document editor built using SlateJS and AWS Amplify."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="%PUBLIC_URL%/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/icons/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="%PUBLIC_URL%/icons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -26,7 +34,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>SlateVim</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -42,4 +50,16 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
   </body>
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId            : '405773517153625',
+        autoLogAppEvents : true,
+        xfbml            : true,
+        version          : 'v9.0'
+      });
+      
+    };
+  </script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </html>

@@ -37,7 +37,9 @@ const NormalEditor = ({
   setValue,
   setMode,
   placeholder,
+  history,
 }) => {
+  const [saved, setSaved] = useState(true);
   const [command, setCommand] = useState(""); // currently registered command
   const [serialized, setSerialized] = useState(null);
   const [operations, setOperations] = useState("");
@@ -96,7 +98,14 @@ const NormalEditor = ({
           // console.log("received operations and applying...");
           // console.log(parsedOp);
           remote.current = true;
-          parsedOp.forEach((o) => editor.apply(o));
+          try {
+            parsedOp.forEach((o) => {
+              setSaved(false);
+              editor.apply(o);
+            });
+          } catch (e) {
+            console.log(e.message);
+          }
           remote.current = false;
           // console.log("operations applied!");
         }
@@ -121,7 +130,14 @@ const NormalEditor = ({
           // console.log("received operations and applying...");
           // console.log(parsedOp);
           remote.current = true;
-          parsedOp.forEach((o) => editor.apply(o));
+          try {
+            parsedOp.forEach((o) => {
+              setSaved(false);
+              editor.apply(o);
+            });
+          } catch (e) {
+            console.log(e.message);
+          }
           remote.current = false;
           // console.log("operations applied!");
         }
@@ -210,8 +226,6 @@ const NormalEditor = ({
         const doc = serialize(val);
         if (!serialized && serialized !== "") {
           initializeDocument(doc);
-        } else {
-          modifyDocument(doc);
         }
 
         const ops = editor.operations
@@ -231,6 +245,7 @@ const NormalEditor = ({
         // ops.forEach((op) => console.log(op));
 
         if (ops.length && !remote.current) {
+          setSaved(false);
           const opsData = JSON.stringify(ops);
           // console.log(opsData);
           if (!operations) {
@@ -256,7 +271,7 @@ const NormalEditor = ({
             syncedCommand += event.key;
           }
           if (event.key === ":") {
-            setCommand("");
+            setCommand(":");
           } else if (event.key === "Backspace") {
             if (command) {
               setCommand(command.substr(0, command.length - 1));
@@ -303,6 +318,10 @@ const NormalEditor = ({
               case "$" : { handle$() ; break; }
               case "gg": { handleGG(); break; }
               case "G" : { handleG() ; break; }
+              // : commands
+              case ":wEnter" : { handleColW() ; break; }
+              case ":wqEnter": { handleColWQ(); break; }
+              case ":q!Enter": { handleColQ() ; break; }
               default:
                 break;
             }
@@ -314,6 +333,14 @@ const NormalEditor = ({
         {command ? (
           <kbd className="bg-gray-200 p-1 rounded">{command}</kbd>
         ) : null}
+      </p>
+      <p className={`${paraStyle}`}>
+        Status:{" "}
+        {saved ? (
+          <i className="text-green-300">Saved</i>
+        ) : (
+          <i className="text-red-300">Unsaved</i>
+        )}
       </p>
     </Slate>
   );
@@ -653,6 +680,29 @@ const NormalEditor = ({
       path: [editor.children.length - 1, 0],
       offset: 0,
     });
+  }
+
+  function handleColW() {
+    // Write (save)
+    setCommand("");
+    setSaved(true);
+    modifyDocument(serialize(value));
+  }
+
+  function handleColWQ() {
+    // Write (save) and Quit (to homepage)
+    setCommand("");
+
+    modifyDocument(serialize(value));
+    setSaved(true);
+    history.push("/");
+  }
+
+  function handleColQ() {
+    // Quit (to homepage)
+    setCommand("");
+
+    history.push("/");
   }
 };
 

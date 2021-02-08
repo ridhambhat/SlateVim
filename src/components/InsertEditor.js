@@ -29,7 +29,7 @@ const InsertEditor = ({
   setValue,
   placeholder,
 }) => {
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(true);
   const [serialized, setSerialized] = useState(null);
   const [operations, setOperations] = useState("");
 
@@ -230,6 +230,9 @@ const InsertEditor = ({
         const doc = serialize(value);
         if (!serialized && serialized !== "") {
           initializeDocument(doc);
+        } else {
+          modifyDocument(serialize(value));
+          setSaved(true);
         }
 
         const ops = editor.operations
@@ -251,7 +254,6 @@ const InsertEditor = ({
         console.log("id => " + id.current + "  REMOTE => " + remote.current);
 
         if (ops.length && !remote.current) {
-          setSaved(false);
           const opsData = JSON.stringify(ops);
           // console.log(opsData);
           if (!operations) {
@@ -277,7 +279,12 @@ const InsertEditor = ({
         }}
       />
       <p className={`${paraStyle}`}>
-        Status: {saved ? <i>Saved</i> : <i>Unsaved</i>}
+        Status:{" "}
+        {saved ? (
+          <i className="text-green-300">Saved</i>
+        ) : (
+          <i className="text-red-300">Unsaved</i>
+        )}
       </p>
     </Slate>
   );

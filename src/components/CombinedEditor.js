@@ -14,11 +14,15 @@ import {
   NORMAL_MODE,
   PLACEHOLDER,
 } from "../utils/variables";
-import { btnStyle, paraStyle } from "../styles/tailwindStyles";
+import {
+  btnStyle,
+  paraStyle,
+  editorBtnContainerStyle,
+} from "../styles/tailwindStyles";
 
-const CombinedEditor = ({ id, groupID, remote }) => {
+const CombinedEditor = ({ id, groupID, remote, history }) => {
   const [value, setValue] = useState(INITIAL_VALUE);
-  const [mode, setMode] = useState(NORMAL_MODE);
+  const [mode, setMode] = useState(INSERT_MODE);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
   document.onkeydown = function (e) {
@@ -35,7 +39,7 @@ const CombinedEditor = ({ id, groupID, remote }) => {
 
   return (
     <Fragment>
-      <div className="container rounded bg-gray-200 p-2 w-1/2 mx-auto text-base text-center m-4">
+      <div className={`${editorBtnContainerStyle}`}>
         <div className="flex space-x-4">
           <button
             className={`${btnStyle}`}
@@ -78,6 +82,7 @@ const CombinedEditor = ({ id, groupID, remote }) => {
           setValue={(value) => setValue(value)}
           setMode={(mode) => setMode(mode)}
           placeholder={PLACEHOLDER}
+          history={history}
         />
       )}
     </Fragment>

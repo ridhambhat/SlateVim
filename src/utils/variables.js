@@ -20,3 +20,5 @@ export const INITIAL_VALUE = [
     ],
   },
 ];
+
+export const SITE_URL = "https://dev.d3p5pyu6h7q77o.amplifyapp.com";

@@ -2,21 +2,15 @@ import React from "react";
 
 // Custom
 import Header from "./components/Header";
+import NavBar from "./components/NavBar";
 import SyncingEditor from "./components/SyncingEditor";
-import { darkGrayBtnStyle } from "./styles/tailwindStyles";
 
 const App = ({ match: { params }, history }) => {
   return (
     <div>
-      <button
-        className={`${darkGrayBtnStyle}`}
-        onClick={() => history.push("/")}
-      >
-        {" "}
-        &lt;{" "}
-      </button>
+      <NavBar history={history} />
       <Header />
-      <SyncingEditor groupID={params.id} />
+      <SyncingEditor history={history} groupID={params.id} />
     </div>
   );
 };

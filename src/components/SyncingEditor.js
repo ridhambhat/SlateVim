@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 
 import CombinedEditor from "./CombinedEditor";
 
-const SyncingEditor = ({ groupID }) => {
+const SyncingEditor = ({ groupID, history }) => {
   const id = useRef(`${Date.now()}`);
   const remote = useRef(false);
 
@@ -12,6 +12,7 @@ const SyncingEditor = ({ groupID }) => {
       groupID={groupID}
       className="combined-editor"
       remote={remote}
+      history={history}
     />
   );
 };
