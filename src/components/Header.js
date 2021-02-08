@@ -6,11 +6,11 @@ import logo from "../assets/images/logo.png";
 const Header = () => {
   return (
     <div className={`${paraStyle} text-justify`}>
-      <div className="grid grid-cols-5">
-        <div className="col-span-1">
-          <img src={logo} alt="SlateVim logo" />
+      <div className="flex flex-wrap">
+        <div className="w-full mb-2 xl:w-1/5 px-2">
+          <img src={logo} alt="SlateVim logo" className="mx-auto" />
         </div>
-        <div className="col-span-4">
+        <div className="w-full xl:w-4/5 px-2">
           <p className="m-2">
             Hello! Welcome to{" "}
             <a
