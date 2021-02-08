@@ -16,7 +16,7 @@ import {
 } from "../utils/variables";
 import { btnStyle, paraStyle } from "../styles/tailwindStyles";
 
-const CombinedEditor = ({ id, remote }) => {
+const CombinedEditor = ({ id, groupID, remote }) => {
   const [value, setValue] = useState(INITIAL_VALUE);
   const [mode, setMode] = useState(NORMAL_MODE);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
@@ -60,6 +60,7 @@ const CombinedEditor = ({ id, remote }) => {
       {mode === INSERT_MODE ? (
         <InsertEditor
           id={id}
+          groupID={groupID}
           remote={remote}
           value={value}
           editor={editor}
@@ -70,12 +71,13 @@ const CombinedEditor = ({ id, remote }) => {
       ) : (
         <NormalEditor
           id={id}
+          groupID={groupID}
           remote={remote}
-          value={value}
           editor={editor}
-          placeholder={PLACEHOLDER}
+          value={value}
           setValue={(value) => setValue(value)}
           setMode={(mode) => setMode(mode)}
+          placeholder={PLACEHOLDER}
         />
       )}
     </Fragment>

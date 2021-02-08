@@ -20,7 +20,6 @@ import { onCreateOperation, onUpdateOperation } from "../graphql/subscriptions";
 import {
   getIndexLastCharOfLine,
   getIndexFirstCharOfLine,
-  getIndexCursorBelow,
 } from "../utils/cursorMethods";
 import { paste } from "../utils/textEditingMethods";
 import { paraStyle, editorStyle } from "../styles/tailwindStyles";
@@ -29,22 +28,29 @@ import { INSERT_MODE, INDENT_LITERAL } from "../utils/variables";
 
 Amplify.configure(awsExports);
 
-const NormalEditor = (props) => {
-  const editor = props.editor;
-
+const NormalEditor = ({
+  id,
+  groupID,
+  remote,
+  editor,
+  value,
+  setValue,
+  setMode,
+  placeholder,
+}) => {
   const [command, setCommand] = useState(""); // currently registered command
-  const [serialized, setSerialized] = useState("");
+  const [serialized, setSerialized] = useState(null);
   const [operations, setOperations] = useState("");
 
   const fetchDocuments = async () => {
     try {
       const documentData = await API.graphql(
-        graphqlOperation(getDocument, { id: "document" })
+        graphqlOperation(getDocument, { id: groupID })
       );
       const data = documentData.data.getDocument;
       setSerialized(data.document);
       const dataDocument = deserialize(data.document);
-      props.setValue(dataDocument);
+      setValue(dataDocument);
     } catch (e) {
       console.log("error fetching documents", e);
     }
@@ -53,7 +59,7 @@ const NormalEditor = (props) => {
   const fetchOperations = async () => {
     try {
       const operationData = await API.graphql(
-        graphqlOperation(getOperation, { id: "operations" })
+        graphqlOperation(getOperation, { id: groupID })
       );
       const data = operationData.data.getOperation;
       setOperations(data.op);
@@ -85,13 +91,13 @@ const NormalEditor = (props) => {
       }) => {
         const { op, editorId } = onCreateOperation;
         setOperations(op);
-        if (props.id.current !== editorId) {
+        if (id.current !== editorId) {
           const parsedOp = JSON.parse(op);
           // console.log("received operations and applying...");
           // console.log(parsedOp);
-          props.remote.current = true;
+          remote.current = true;
           parsedOp.forEach((o) => editor.apply(o));
-          props.remote.current = false;
+          remote.current = false;
           // console.log("operations applied!");
         }
       },
@@ -110,13 +116,13 @@ const NormalEditor = (props) => {
       }) => {
         const { op, editorId } = onUpdateOperation;
         setOperations(op);
-        if (props.id.current !== editorId) {
+        if (id.current !== editorId) {
           const parsedOp = JSON.parse(op);
           // console.log("received operations and applying...");
           // console.log(parsedOp);
-          props.remote.current = true;
+          remote.current = true;
           parsedOp.forEach((o) => editor.apply(o));
-          props.remote.current = false;
+          remote.current = false;
           // console.log("operations applied!");
         }
       },
@@ -143,7 +149,7 @@ const NormalEditor = (props) => {
     try {
       await API.graphql(
         graphqlOperation(createDocument, {
-          input: { id: "document", document: doc },
+          input: { id: groupID, document: doc },
         })
       );
       // console.log("created document");
@@ -157,7 +163,7 @@ const NormalEditor = (props) => {
     try {
       await API.graphql(
         graphqlOperation(updateDocument, {
-          input: { id: "document", document: doc },
+          input: { id: groupID, document: doc },
         })
       );
       // console.log("updated document");
@@ -171,7 +177,7 @@ const NormalEditor = (props) => {
     try {
       await API.graphql(
         graphqlOperation(createOperation, {
-          input: { id: "operations", editorId: editorId, op: ops },
+          input: { id: groupID, editorId: editorId, op: ops },
         })
       );
       // console.log("created operations");
@@ -185,7 +191,7 @@ const NormalEditor = (props) => {
     try {
       await API.graphql(
         graphqlOperation(updateOperation, {
-          input: { id: "operations", editorId: editorId, op: ops },
+          input: { id: groupID, editorId: editorId, op: ops },
         })
       );
       // console.log("updated operations");
@@ -198,10 +204,10 @@ const NormalEditor = (props) => {
   return (
     <Slate
       editor={editor}
-      value={props.value}
-      onChange={(value) => {
-        props.setValue(value);
-        const doc = serialize(value);
+      value={value}
+      onChange={(val) => {
+        setValue(val);
+        const doc = serialize(val);
         if (!serialized && serialized !== "") {
           initializeDocument(doc);
         } else {
@@ -224,20 +230,20 @@ const NormalEditor = (props) => {
         // console.log("ops to be emitted:");
         // ops.forEach((op) => console.log(op));
 
-        if (ops.length && !props.remote.current) {
+        if (ops.length && !remote.current) {
           const opsData = JSON.stringify(ops);
           // console.log(opsData);
           if (!operations) {
-            initializeOperation(opsData, props.id.current);
+            initializeOperation(opsData, id.current);
           } else {
-            modifyOperation(opsData, props.id.current);
+            modifyOperation(opsData, id.current);
           }
         }
       }}
     >
       <Editable
         className={`${editorStyle}`}
-        placeholder={props.placeholder}
+        placeholder={placeholder}
         autoFocus
         onKeyDown={(event) => {
           if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
@@ -259,7 +265,7 @@ const NormalEditor = (props) => {
           } else if (event.key === "i") {
             // It will shift to insert mode
             setCommand("");
-            props.setMode(INSERT_MODE);
+            setMode(INSERT_MODE);
           } else if (event.key === "Escape") {
             setCommand("");
           } else {
@@ -480,14 +486,14 @@ const NormalEditor = (props) => {
   function handleCC() {
     handleDD();
     setTimeout(() => {
-      props.setMode(INSERT_MODE);
+      setMode(INSERT_MODE);
     }, 100);
   }
 
   function handleC() {
     handleDorD$();
     setTimeout(() => {
-      props.setMode(INSERT_MODE);
+      setMode(INSERT_MODE);
     }, 100);
   }
 
