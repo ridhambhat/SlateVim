@@ -279,7 +279,12 @@ const InsertEditor = ({
         }}
       />
       <p className={`${paraStyle}`}>
-        Status: {saved ? <i>Saved</i> : <i>Unsaved</i>}
+        Status:{" "}
+        {saved ? (
+          <i className="text-green-300">Saved</i>
+        ) : (
+          <i className="text-red-300">Unsaved</i>
+        )}
       </p>
     </Slate>
   );

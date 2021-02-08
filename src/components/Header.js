@@ -47,7 +47,8 @@ const Header = () => {
             <strong>Insert</strong> Mode, but{" "}
             <kbd className="bg-gray-200 p-1 rounded">!wEnter</kbd> or{" "}
             <kbd className="bg-gray-200 p-1 rounded">!wqEnter</kbd> to save in{" "}
-            <strong>Normal</strong> Mode!
+            <strong>Normal</strong> Mode! Save in <strong>Normal</strong> Mode
+            before switching to <strong>Insert</strong>!
           </p>
         </div>
       </div>
