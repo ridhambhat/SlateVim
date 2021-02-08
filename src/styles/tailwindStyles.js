@@ -5,3 +5,6 @@ export const paraStyle = "container w-1/2 mx-auto text-base text-center m-4";
 
 export const editorStyle =
   "box-border rounded h-80 w-1/2 mx-auto bg-black p-6 text-white overflow-y-auto";
+
+export const linkStyle =
+  "text-blue-400 hover:text-blue-800 visited:text-purple-600";
