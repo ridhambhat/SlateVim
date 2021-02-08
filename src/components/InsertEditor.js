@@ -87,11 +87,9 @@ const InsertEditor = ({
           // console.log("received operations and applying...");
           // console.log(parsedOp);
           const val = id.current;
-          console.log(val);
+          // console.log(val);
           remote.current = true;
-          console.log(
-            "id => " + id.current + " Changes remote true => " + remote.current
-          );
+          // console.log("id => " + id.current + " Changes remote true => " + remote.current);
           try {
             parsedOp.forEach((o) => {
               setSaved(false);
@@ -101,9 +99,7 @@ const InsertEditor = ({
             console.log(e.message);
           }
           remote.current = false;
-          console.log(
-            "id => " + id.current + " Changes remote false => " + remote.current
-          );
+          // console.log("id => " + id.current + " Changes remote false => " + remote.current);
           // console.log("operations applied!");
         }
       },
@@ -127,9 +123,7 @@ const InsertEditor = ({
           // console.log("received operations and applying...");
           // console.log(parsedOp);
           remote.current = true;
-          console.log(
-            "id => " + id.current + " Changes remote true => " + remote.current
-          );
+          // console.log("id => " + id.current + " Changes remote true => " + remote.current);
           try {
             parsedOp.forEach((o) => {
               setSaved(false);
@@ -139,9 +133,7 @@ const InsertEditor = ({
             console.log(e.message);
           }
           remote.current = false;
-          console.log(
-            "id => " + id.current + " Changes remote false => " + remote.current
-          );
+          // console.log("id => " + id.current + " Changes remote false => " + remote.current);
           // console.log("operations applied!");
         }
       },
@@ -230,9 +222,6 @@ const InsertEditor = ({
         const doc = serialize(value);
         if (!serialized && serialized !== "") {
           initializeDocument(doc);
-        } else {
-          modifyDocument(serialize(value));
-          setSaved(true);
         }
 
         const ops = editor.operations
@@ -251,9 +240,10 @@ const InsertEditor = ({
         // console.log("ops to be emitted:");
         // ops.forEach((op) => console.log(op));
 
-        console.log("id => " + id.current + "  REMOTE => " + remote.current);
+        // console.log("id => " + id.current + "  REMOTE => " + remote.current);
 
         if (ops.length && !remote.current) {
+          setSaved(false);
           const opsData = JSON.stringify(ops);
           // console.log(opsData);
           if (!operations) {
@@ -275,6 +265,11 @@ const InsertEditor = ({
               modifyDocument(serialize(value));
               setSaved(true);
             }
+          }
+
+          if (event.key === "Escape") {
+            modifyDocument(serialize(value));
+            setSaved(true);
           }
         }}
       />

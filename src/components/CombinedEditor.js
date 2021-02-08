@@ -5,6 +5,11 @@ import { createEditor } from "slate";
 import { withReact } from "slate-react";
 import { withHistory } from "slate-history";
 
+// Import Amplify methods and library
+import Amplify, { API, graphqlOperation } from "aws-amplify";
+import awsExports from "../aws-exports";
+import { updateDocument, createDocument } from "../graphql/mutations";
+
 // Custom
 import NormalEditor from "./NormalEditor";
 import InsertEditor from "./InsertEditor";
@@ -19,6 +24,9 @@ import {
   paraStyle,
   editorBtnContainerStyle,
 } from "../styles/tailwindStyles";
+import { serialize } from "../utils/dataMethods";
+
+Amplify.configure(awsExports);
 
 const CombinedEditor = ({ id, groupID, remote, history }) => {
   const [value, setValue] = useState(INITIAL_VALUE);
@@ -37,6 +45,40 @@ const CombinedEditor = ({ id, groupID, remote, history }) => {
     }
   };
 
+  const initializeDocument = async (doc) => {
+    try {
+      await API.graphql(
+        graphqlOperation(createDocument, {
+          input: { id: groupID, document: doc },
+        })
+      );
+    } catch (e) {
+      console.log("error creating document", e);
+    }
+  };
+
+  const modifyDocument = async (doc) => {
+    try {
+      await API.graphql(
+        graphqlOperation(updateDocument, {
+          input: { id: groupID, document: doc },
+        })
+      );
+    } catch (e) {
+      console.log("error updating document", e);
+    }
+  };
+
+  const onModeButtonClick = (event) => {
+    setMode(event.target.value);
+    try {
+      modifyDocument(serialize(value));
+    } catch (e) {
+      console.log(e.message);
+      initializeDocument(serialize(value));
+    }
+  };
+
   return (
     <Fragment>
       <div className={`${editorBtnContainerStyle}`}>
@@ -44,14 +86,14 @@ const CombinedEditor = ({ id, groupID, remote, history }) => {
           <button
             className={`${btnStyle}`}
             value="normal"
-            onClick={(e) => setMode(e.target.value)}
+            onClick={onModeButtonClick}
           >
             Normal [<kbd>Esc</kbd>]
           </button>
           <button
             className={`${btnStyle}`}
             value="insert"
-            onClick={(e) => setMode(e.target.value)}
+            onClick={onModeButtonClick}
           >
             Insert [<kbd>i</kbd>]
           </button>

@@ -43,12 +43,13 @@ const Header = () => {
             read-only, but give you access to text editing commands like in
             Vim's Normal Mode. Try typing{" "}
             <kbd className="bg-gray-200 p-1 rounded">yy</kbd> or{" "}
-            <kbd className="bg-gray-200 p-1 rounded">dd</kbd>! It's autosave in{" "}
+            <kbd className="bg-gray-200 p-1 rounded">dd</kbd>! It's{" "}
+            <kbd className="bg-gray-200 p-1 rounded">Ctrl+s</kbd> or{" "}
+            <kbd className="bg-gray-200 p-1 rounded">Cmd+s</kbd> to save in{" "}
             <strong>Insert</strong> Mode, but{" "}
             <kbd className="bg-gray-200 p-1 rounded">!wEnter</kbd> or{" "}
-            <kbd className="bg-gray-200 p-1 rounded">!wqEnter</kbd> to save in{" "}
-            <strong>Normal</strong> Mode! Save in <strong>Normal</strong> Mode
-            before switching to <strong>Insert</strong>!
+            <kbd className="bg-gray-200 p-1 rounded">!wqEnter</kbd> in{" "}
+            <strong>Normal</strong> Mode!
           </p>
         </div>
       </div>
